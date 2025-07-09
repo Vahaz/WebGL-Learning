@@ -1,4 +1,4 @@
-name: NodeJS with Webpack
+name: Build main.js
 
 on:
   push:
@@ -9,20 +9,50 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
-
+        node-version: [23.x]
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
-    - name: Build
-      run: |
-        npm install
-        npx webpack
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build main.js
+        run: npx webpack
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '23.x'
+          cache: 'npm'
+
+      - name: Install & Build
+        run: |
+          npm ci
+          npx webpack
+
+      - name: Commit & push bundle
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "automated build of main.js"
+          branch: workflow
+          file_pattern: 'dist/main.js'
+          create_branch: true
