@@ -7,8 +7,8 @@ import * as geo from "./geometry";
 //
 
 const SETTINGS = {
-    FOV : 60.0,
-    ROTATION_ANGLE : Math.floor(Math.random() * 180), // 10.0
+    FOV : 60.0, // Default: 60.0
+    ROTATION_ANGLE : 10.0, // Default: 10.0
 }
 
 async function main(): Promise<void> {
@@ -156,7 +156,7 @@ async function main(): Promise<void> {
         gl.uniformMatrix4fv(matViewProjUniform, false, matViewProj.m);
 
         cubes.forEach((cube) => {
-            cube.rotate(dt * fnc.toRadian(SETTINGS.ROTATION_ANGLE));
+            cube.rotate(dt * fnc.toRadian(Math.floor(Math.random() * 180)));
             cube.draw(gl, matWorldUniform);
         });
         // Loop calls, each time the drawing is ready.
