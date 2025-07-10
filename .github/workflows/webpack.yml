@@ -52,6 +52,6 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "automated build of main.js"
-          branch: workflow
+          branch: main
           file_pattern: 'dist/main.js'
           create_branch: true

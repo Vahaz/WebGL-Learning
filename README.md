@@ -14,6 +14,8 @@
  - Live Preview v0.4.15 by __Microsoft__ (*Hosts a local server in your workspace for you to preview your index.html.*)
  - WebGL GLSL Editor v1.3.8 by __Rácz Zalán__ (*Language support for WebGL GLSL shaders, did not used it that much.*)
  - WebGL Syntax Hint v0.0.2 by __nieyuyao__ (*webgl plugin syntax*)
+ - GitHub Actions v0.27.2 by __GitHub__ (*Automate building of main.js on github, thanks to workflow.*)
+
 
 ### Usages:
  - glsl-canvas : *"Show glslCanvas" command*
