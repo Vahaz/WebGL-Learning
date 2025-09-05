@@ -56,28 +56,13 @@ export const CUBE_INDICES = new Uint16Array([
   20, 22, 23, // left
 ]);
 
-export const GROUND_VERTICES = new Float32Array([
-  // The plane ground
-  -1.0, 1.0, -1.0,  // 0
-  -1.0, 1.0, 1.0,   // 1
-  1.0, 1.0, 1.0,    // 2
-  1.0, 1.0, -1.0,   // 3
-]);
-
-export const GROUND_INDICES = new Uint16Array([
-  0, 1, 2,
-  0, 2, 3, // top
-]);
-
-
 // For my tilemap: 
-// 0,0, .5,0, .5,1, 0,1, [= Cat Stare]
-// .5,0, 1,0, 1,1, .5,1, [= Cat OMG]
+// 1,0,   1,0,    1,1,    0,1, [= Cat_OMG]
 export const UV_COORDS = new Float32Array([
-  .5,0, 1,0, 1,1, .5,1, // front
-  .5,0, 1,0, 1,1, .5,1, // back
-  0,0, .5,0, .5,1, 0,1,   // top
-  0,0, .5,0, .5,1, 0,1,   // bottom
-  .5,0, 1,0, 1,1, .5,1,   // right
-  .5,0, 1,0, 1,1, .5,1,   // left
+  0,0,   1,0,    1,1,    0,1, // front
+  0,0,   1,0,    1,1,    0,1, // back
+  0,0,   1,0,    1,1,    0,1,   // top
+  0,0,   1,0,    1,1,    0,1,   // bottom
+  0,0,   1,0,    1,1,    0,1,   // right
+  0,0,   1,0,    1,1,    0,1,   // left
 ])

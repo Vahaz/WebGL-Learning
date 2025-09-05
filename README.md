@@ -21,8 +21,8 @@
  - glsl-canvas : *"Show glslCanvas" command*
  - WebGL GLSL Editor : *Edit and compile shaders*
  - WebGl Syntax Hint : *Autocomplete*
- - Typescript : *<code>tsc --watch</code> command to compile from .ts to .js*
- - Webpack : *<code>webpack --watch</code> command to compile from all .ts to a single .js*
+ - Typescript : *<code>tsc --watch</code> command to compile ALL .ts to MULTIPLES .js files*
+ - Webpack : *<code>webpack --watch</code> command to compile ALL .ts to a SINGLE .js file* (What we uses here!)
 
 ### Tutorial and Learning materials:  
 (Really great content, go watch!)  
@@ -31,3 +31,4 @@
  - [Online WebGL Tutorials](https://webglfundamentals.org/webgl/lessons/)
  - [3D Grapgics Engine tutorial by javidx9](https://www.youtube.com/watch?v=ih20l3pJoeU)
  - [WebGL 2.0 tutorial by Andrew Adamson](https://www.youtube.com/playlist?list=PLPbmjY2NVO_X1U1JzLxLDdRn4NmtxyQQo)
+ - [Freya Holmér youtube channel](https://www.youtube.com/@acegikmo)

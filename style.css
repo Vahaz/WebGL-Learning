@@ -1,0 +1,41 @@
+* {
+    color: beige;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: rgb(42, 42, 42);
+    margin: 0;
+    padding: 5px;
+}
+
+#webgl-canvas {
+    background-color: beige;
+    image-rendering: crisp-edges;
+    width: 98%;
+    margin: 1%;
+}
+
+#loading-time {
+    border: 1px solid beige;
+    text-align: center;
+    width: 7rem;
+    margin: 1%
+}
+
+#loading-title {
+    border: 1px solid beige;
+    padding: 0;
+    margin: 0;
+}
+
+#error-container {
+    border: 1px solid beige;
+    font-size: larger;
+    width: 98%;
+    margin: 1%;
+}
+
+p {
+    padding-left: 10px;
+}

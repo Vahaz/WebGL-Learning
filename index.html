@@ -4,31 +4,34 @@
         <meta charset="utf-8">
         <title>WebGL Demo by Vahaz</title>
         <script src="dist/main.js" type="module"></script>
-        <style>
-            html, head, body {
-                background-color: #2a2a2a;
-                margin: 0;
-                padding: 5px;
-            }
-            #webgl-canvas {
-                background-color: beige;
-                image-rendering: crisp-edges;
-            }
-            #error-container {
-                border: 2px solid beige;
-                width: 637px;
-                font-size: larger;
-                margin-top: 10px;
-            }
-            p {
-                padding-left: 10px;
-                font-family: Arial, sans-serif;
-                color: white;
-            }
-        </style>
+        <link rel="stylesheet" type="text/css" href="/style.css">
     </head>
     <body>
+        <script>
+            var coll = document.getElementsByClassName("collapsible");
+            var i;
+
+            console.log(coll)
+            for (i = 0; i < coll.length; i++) {
+                console.log(i)
+                coll[i].addEventListener("click", function() {
+                    this.classList.toggle("active");
+                    var content = this.nextElementSibling;
+                    console.log(content)
+                    if (content.style.display === "block") {
+                        content.style.display = "none";
+                        console.log(none)
+                    } else {
+                        content.style.display = "block";
+                        console.log(nlock)
+                    }
+                });
+            }
+        </script>
         <canvas id="webgl-canvas" width="640" height="480"></canvas>
+        <div id="loading-time">
+            <p id="loading-title">Loading Time</p>
+        </div>
         <div id="error-container"></div>
     </body>
 </html>

@@ -3,9 +3,18 @@
 //
 
 // Display an error message to the HTML Element with id "error-container".
-export function showError(msg: string): void {
+export function showError(msg: string = "No Data"): void {
     const container = document.getElementById("error-container");
     if(container === null) return console.log("No Element with ID: error-container");
+    const element = document.createElement('p');
+    element.innerText = msg;
+    container.appendChild(element);
+    console.log(msg);
+}
+
+export function setDisplayedLoadingTime(msg: string): void {
+    const container = document.getElementById("loading-time");
+    if(container === null) return console.log("No Element with ID: loading-time")
     const element = document.createElement('p');
     element.innerText = msg;
     container.appendChild(element);
@@ -21,10 +30,12 @@ export async function getShaderSource(url: string): Promise<string> {
     return response.text();
 }
 
-export async function loadImage(url: string): Promise<HTMLImageElement> {
-    const image = new Image();
-    image.src = url;
-    return image;
+export async function getImage(url: string): Promise<HTMLImageElement> {
+    return new Promise((resolve) => {
+        const image = new Image();
+        image.src = url;
+        image.onload = () => resolve(image);
+    })
 }
 
 // Return the WebGL Context from the Canvas Element.
@@ -60,15 +71,15 @@ export function createStaticBuffer(gl: WebGL2RenderingContext, data: ArrayBuffer
 
 /**
  * Create vertex array object buffers, it read the vertices from GPU Buffer.
- * The vertex buffer contains the coordinates and color per vertex. (x, y, z, r, g, b)
- * The index buffer contains wich vertex need to be drawn on scene to avoid surplus.
- * The color attrib pointer is offset by 3 each time to avoid (x, y, z).
+ * The vertex buffer contains the vertices coordinates (can also contains color and size).
+ * The index buffer contains wich vertex need to be drawn on scene to avoid duplicates vertices.
+ * In case of colors, an offset of 3 floats is used each time to avoid (x, y, z) coordinates.
  * The vertex shader place the vertices in clip space and the fragment shader color the pixels. (Default: 0)
  * VertexAttribPointer [Index, Size, Type, IsNormalized, Stride, Offset]
  * - Index (location)
  * - Size (Component per vector)
  * - Type
- * - IsNormalized (int to floats, for color transform [0, 255] to float [0, 1])
+ * - IsNormalized (int to floats, for colors transform [0, 255] to float [0, 1])
  * - Stride (Distance between each vertex in the buffer)
  * - Offset (Number of skiped bytes before reading attributes)
  */
@@ -86,7 +97,7 @@ export function createVAOBuffer(
     gl.vertexAttribPointer(posAttrib, 3, gl.FLOAT, false, 0, 0); // format: (x, y, z) (all f32)
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     gl.bindBuffer(gl.ARRAY_BUFFER, texBuffer);
-    gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(texAttrib, 2, gl.FLOAT, false, 0, 0);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
     gl.bindVertexArray(null);
