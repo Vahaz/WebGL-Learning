@@ -4,34 +4,26 @@
         <meta charset="utf-8">
         <title>WebGL Demo by Vahaz</title>
         <script src="dist/main.js" type="module"></script>
-        <link rel="stylesheet" type="text/css" href="/style.css">
+        <link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body>
-        <script>
-            var coll = document.getElementsByClassName("collapsible");
-            var i;
-
-            console.log(coll)
-            for (i = 0; i < coll.length; i++) {
-                console.log(i)
-                coll[i].addEventListener("click", function() {
-                    this.classList.toggle("active");
-                    var content = this.nextElementSibling;
-                    console.log(content)
-                    if (content.style.display === "block") {
-                        content.style.display = "none";
-                        console.log(none)
-                    } else {
-                        content.style.display = "block";
-                        console.log(nlock)
-                    }
-                });
-            }
-        </script>
         <canvas id="webgl-canvas" width="640" height="480"></canvas>
-        <div id="loading-time">
-            <p id="loading-title">Loading Time</p>
+        <section class="logs">
+            <div class="container" id="loading">
+                <p class="title">Loading</p>
+                <p>...</p>
+            </div>
+            <div class="container" id="fps">
+                <p class="title">FPS</p>
+                <p>...</p>
+            </div>
+            <div class="container" id="test">
+                <p class="title">Test</p>
+                <p>...</p>
+            </div>
+        </section>
+        <div class="container" id="error">
+            <p class="title">Errors - Logs</p>
         </div>
-        <div id="error-container"></div>
     </body>
 </html>

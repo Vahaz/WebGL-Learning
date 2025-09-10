@@ -2,23 +2,37 @@
 // FUNCTION
 //
 
-// Display an error message to the HTML Element with id "error-container".
+// Display an error message to the HTML Element with id "error".
 export function showError(msg: string = "No Data"): void {
-    const container = document.getElementById("error-container");
-    if(container === null) return console.log("No Element with ID: error-container");
+    const container = document.getElementById("error");
+    if(container === null) return console.log("No Element with ID: error");
     const element = document.createElement('p');
     element.innerText = msg;
     container.appendChild(element);
     console.log(msg);
 }
 
-export function setDisplayedLoadingTime(msg: string): void {
-    const container = document.getElementById("loading-time");
-    if(container === null) return console.log("No Element with ID: loading-time")
-    const element = document.createElement('p');
-    element.innerText = msg;
-    container.appendChild(element);
-    console.log(msg);
+export function setLogTime(target: string, msg: string): void {
+    let container = null;
+    if (target == "loading") {
+        container = document.getElementById("loading");
+    } else if (target == "fps") {
+        container = document.getElementById("fps");
+    } else {
+        container = document.getElementById("test");
+    }
+
+    if(container === null) return console.log(`No Element with ID: ${target}`)
+    const p = container.querySelector('p:not(.title)') as HTMLElement | null;
+    if (p) {
+        p.innerText = msg;
+    } else {
+        const element = document.createElement('p');
+        element.innerText = msg;
+        container.appendChild(element);
+    }
+    
+    console.log(`${target}: ${msg}`);
 }
 
 // Get shaders source code.
@@ -85,19 +99,19 @@ export function createStaticBuffer(gl: WebGL2RenderingContext, data: ArrayBuffer
  */
 export function createVAOBuffer(
     gl: WebGL2RenderingContext,
-    vertexBuffer: WebGLBuffer, indexBuffer: WebGLBuffer, texBuffer: WebGLBuffer,
-    posAttrib: number, texAttrib: number
+    vertexBuffer: WebGLBuffer, indexBuffer: WebGLBuffer, uvBuffer: WebGLBuffer,
+    posAttrib: number, uvAttrib: number
 ): WebGLVertexArrayObject {
     const vao = gl.createVertexArray();
     if(!vao) { showError("Failed to allocate VAO buffer."); return 0; }
     gl.bindVertexArray(vao);
     gl.enableVertexAttribArray(posAttrib);
-    gl.enableVertexAttribArray(texAttrib);
+    gl.enableVertexAttribArray(uvAttrib);
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     gl.vertexAttribPointer(posAttrib, 3, gl.FLOAT, false, 0, 0); // format: (x, y, z) (all f32)
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
-    gl.bindBuffer(gl.ARRAY_BUFFER, texBuffer);
-    gl.vertexAttribPointer(texAttrib, 2, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
+    gl.vertexAttribPointer(uvAttrib, 2, gl.FLOAT, false, 0, 0);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
     gl.bindVertexArray(null);

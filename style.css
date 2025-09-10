@@ -1,41 +1,53 @@
 * {
-    color: beige;
     font-family: Arial, sans-serif;
+    color: beige;
 }
 
-body {
-    background-color: rgb(42, 42, 42);
+body, html {
+    background-color: rgb(24, 24, 24);
+    flex-direction: column;
+    font-size: large;
+    align-items: center;
+    justify-content: flex-start;
+    display: flex;
+    height: 100vh;
+    width: 100%;
     margin: 0;
-    padding: 5px;
+    gap: 1em;
 }
 
 #webgl-canvas {
-    background-color: beige;
+    background-color: rgb(24, 24, 24);
     image-rendering: crisp-edges;
-    width: 98%;
-    margin: 1%;
+    width: 95%;
 }
 
-#loading-time {
-    border: 1px solid beige;
+.logs {
+    display: flex;
+    flex-direction: row;
+    gap: 50px;
+}
+
+.container {
+    border: 2px solid beige;
+    overflow-wrap: break-word;
     text-align: center;
-    width: 7rem;
-    margin: 1%
+    overflow: hidden;
+    width: 5rem;
 }
 
-#loading-title {
-    border: 1px solid beige;
-    padding: 0;
+.title {
+    border: 2px solid beige;
     margin: 0;
 }
 
-#error-container {
-    border: 1px solid beige;
-    font-size: larger;
-    width: 98%;
-    margin: 1%;
+#error {
+    width: 95%;
 }
 
-p {
-    padding-left: 10px;
+@media (max-width: 400px) {
+    .logs {
+        flex-direction: column;
+        gap: 1em;
+    }
 }

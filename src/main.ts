@@ -7,7 +7,7 @@ import * as geo from "./geometry";
 //
 
 const UP_VEC = new cls.vec3(0, 1, 0);
-const START = Date.now();
+const T0 = Date.now();
 const TEXTURES = [
     './img/cat_omg.png',
     './img/cat_stare.png'
@@ -18,6 +18,8 @@ const SETTINGS = {
 }
 
 async function main(): Promise<void> {
+
+    
 
     // Canvas Element and Rendering Context.
     const canvas = document.getElementById("webgl-canvas") as HTMLCanvasElement;
@@ -37,21 +39,22 @@ async function main(): Promise<void> {
     const fragmentSrc = await fnc.getShaderSource('./shaders/fragment_shader.frag');
     const program = fnc.createProgram(gl, vertexSrc, fragmentSrc);
 
+
     // Create a texture and bind our image.
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D_ARRAY, texture);
 
-    // Target, Mipmap_Level, Internal_Format, Width, Height, Images_Count
+    // Target, Mipmap_Levels, Internal_Format, Width, Height, Images_Count
     gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, 128, 128, TEXTURES.length);
 
     // Flip the origin point of WebGL. (PNG format start at the top and WebGL at the bottom)
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
-    // For each textures/images we load them, and set their depth/index.
-    for (let i = 0; i < TEXTURES.length; i++) {
-        const image = await fnc.getImage(TEXTURES[i]);
-        // Target, Mipmap_Level, xOffset, yOffset, zOffset (Depth), Width, Height, Internal_Format, Image
-        gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, i, 128, 128, 1, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    // Because texSubImage3D is async, waiting for each image to load is slow. So, we preload all images using a Promise.
+    const images = await Promise.all(TEXTURES.map(src => fnc.getImage(src)));
+    for (let i = 0; i < images.length; i++) {
+        // Target, Mipmap_Level, Internal_Format, Width, Height, Depth, Border, Format, Type, Offset
+        gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, i, 128, 128, 1, gl.RGBA, gl.UNSIGNED_BYTE, images[i]);
     }
 
     // Change the minimum and magnitude filters when scaling up and down textures.
@@ -59,7 +62,11 @@ async function main(): Promise<void> {
     gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
     // Static buffer for UV coordinates. Might be constant with texture arrays.
-    const texCoordsBuffer = fnc.createStaticBuffer(gl, geo.UV_COORDS, false);
+    const texCoordsBuffer = fnc.createStaticBuffer(gl, geo.UV_DATA, false);
+
+
+    const T1 = Date.now();
+    fnc.setLogTime("test", `${Date.now() - T1}ms`);
 
     /*
     * Getting the attributes from the vertex shader file.
@@ -69,7 +76,7 @@ async function main(): Promise<void> {
     * we can replace gl.getAttribLocation() with the (location=number) number.
     */
     const positionAttribute = gl.getAttribLocation(program, 'vertexPosition'); // location = 0
-    const texAttribute = gl.getAttribLocation(program, 'aTexCoord'); // location = 1
+    const uvAttribute = gl.getAttribLocation(program, 'aUV'); // location = 1
     const depthAttribute = gl.getAttribLocation(program, 'aDepth'); // location = 2
 
     // We can not specify Uniforms locations manually. We need to get them using 'getUniformLocation'.
@@ -78,14 +85,14 @@ async function main(): Promise<void> {
     const samplerUniform = gl.getUniformLocation(program, 'uSampler') as WebGLUniformLocation;
 
     // Typescript want to verify if the variables are set, not the best way to do it.
-    if(positionAttribute < 0 || texAttribute < 0 || depthAttribute < 0 || !matWorldUniform || !matViewProjUniform || !samplerUniform) {
+    if(positionAttribute < 0 || uvAttribute < 0 || depthAttribute < 0 || !matWorldUniform || !matViewProjUniform || !samplerUniform) {
         fnc.showError(`Failed to get attribs/uniforms (Max: ${gl.getParameter(gl.MAX_VERTEX_ATTRIBS)}): ` +
-            `pos=${positionAttribute}` +
-            `tex=${texAttribute}` +
-            `depth=${depthAttribute}` +
-            `matWorld=${!!matWorldUniform}` +
-            `matViewProj=${!!matViewProjUniform}` +
-            `sampler=${!!samplerUniform}`
+            ` pos=${positionAttribute}` +
+            ` uv=${uvAttribute}` +
+            ` depth=${depthAttribute}` +
+            ` matWorld=${!!matWorldUniform}` +
+            ` matViewProj=${!!matViewProjUniform}` +
+            ` sampler=${!!samplerUniform}`
         );
         return;
     }
@@ -94,13 +101,15 @@ async function main(): Promise<void> {
     gl.vertexAttrib1f(depthAttribute, 0);
 
     // Create our vertex array object (VAOs) buffers.
-    const cubeVAO = fnc.createVAOBuffer(gl, cubeVertices, cubeIndices, texCoordsBuffer, positionAttribute, texAttribute);
+    const cubeVAO = fnc.createVAOBuffer(gl, cubeVertices, cubeIndices, texCoordsBuffer, positionAttribute, uvAttribute);
     if(!cubeVAO) return fnc.showError(`Failes to create VAOs: cube=${!!cubeVAO}`);
+
+    let random = new cls.vec3(Math.random() * 1, Math.random() * 1, Math.random() * 1);
 
     // Store our cubes, draw them each time. (a lot of draw calls)
     const cubes = [
         new cls.Shape(new cls.vec3(0, 0.4, 0), 0.4, UP_VEC, 0, cubeVAO, geo.CUBE_INDICES.length), // Center
-        new cls.Shape(new cls.vec3(1, 0.05, 1), 0.3, UP_VEC, fnc.toRadian(20), cubeVAO, geo.CUBE_INDICES.length),
+        new cls.Shape(random, 0.3, UP_VEC, fnc.toRadian(20), cubeVAO, geo.CUBE_INDICES.length),
         new cls.Shape(new cls.vec3(1, 0.1, -1), 0.1, UP_VEC, fnc.toRadian(40), cubeVAO, geo.CUBE_INDICES.length),
         new cls.Shape(new cls.vec3(-1, 0.15, 1), 0.15, UP_VEC, fnc.toRadian(60), cubeVAO, geo.CUBE_INDICES.length),
         new cls.Shape(new cls.vec3(-1, 0.2, -1), 0.2, UP_VEC, fnc.toRadian(80), cubeVAO, geo.CUBE_INDICES.length),
@@ -120,6 +129,10 @@ async function main(): Promise<void> {
      * - Draw Calls (w/ Primitive assembly + for loop)
      */
     let lastFrameTime = performance.now();
+
+    // Randomize cube rotation speed each time.
+    let rdm = Math.floor(Math.random() * 180);
+
     const frame = async () => {
         // Calculate dt (delta time) with time in seconds between each frame.
         const thisFrameTime = performance.now();
@@ -164,18 +177,20 @@ async function main(): Promise<void> {
         gl.useProgram(program);
         gl.uniformMatrix4fv(matViewProjUniform, false, matViewProj.m);
 
+
         cubes.forEach((cube, index) => {
             // The center cube do not rotate on itself.
             if (index == 0) { cube.draw(gl, matWorldUniform); return } 
-            cube.rotate(dt * fnc.toRadian(Math.floor(Math.random() * 180)));
+            cube.rotate(dt * fnc.toRadian(rdm));
             cube.draw(gl, matWorldUniform);
         });
         // Loop calls, each time the drawing is ready.
+        fnc.setLogTime("fps", `${Math.ceil(dt)}ms`);
         requestAnimationFrame(frame);
     };
     // First call, as soon, as the page is loaded.
     requestAnimationFrame(frame);
-    fnc.setDisplayedLoadingTime(`${ Date.now() - START }ms`);
+    fnc.setLogTime("loading", `${ Date.now() - T0 }ms`);
 }
 
 fnc.showError("No Errors! 🌞");

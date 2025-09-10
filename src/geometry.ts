@@ -56,11 +56,9 @@ export const CUBE_INDICES = new Uint16Array([
   20, 22, 23, // left
 ]);
 
-// For my tilemap: 
-// 1,0,   1,0,    1,1,    0,1, [= Cat_OMG]
-export const UV_COORDS = new Float32Array([
-  0,0,   1,0,    1,1,    0,1, // front
-  0,0,   1,0,    1,1,    0,1, // back
+export const UV_DATA = new Float32Array([
+  0,0,   1,0,    1,1,    0,1,   // front
+  0,0,   1,0,    1,1,    0,1,   // back
   0,0,   1,0,    1,1,    0,1,   // top
   0,0,   1,0,    1,1,    0,1,   // bottom
   0,0,   1,0,    1,1,    0,1,   // right
