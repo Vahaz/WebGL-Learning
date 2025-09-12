@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x, 23.x]
+        node-version: [22.x, 23.x]
     steps:
       - uses: actions/checkout@v4
 
@@ -52,6 +52,6 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "automated build of main.js"
-          branch: main
+          branch: workflow
           file_pattern: 'dist/main.js'
           create_branch: true
