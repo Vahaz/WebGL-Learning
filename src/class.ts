@@ -26,7 +26,7 @@ export class Shape {
 
         this.matWorld.setFromRotationTranslationScale(this.rotation, this.pos, this.scaleVec);
 
-        gl.uniformMatrix4fv(matWorldUniform, false, this.matWorld.m);
+        gl.uniformMatrix4fv(matWorldUniform, false, this.matWorld.mat);
         gl.bindVertexArray(this.vao);
         gl.drawElements(gl.TRIANGLES, this.numIndices, gl.UNSIGNED_SHORT, 0);
         gl.bindVertexArray(null);
@@ -83,15 +83,15 @@ export class quat {
 }
 
 export class mat4 {
-    public m: Float32Array;
+    public mat: Float32Array;
 
     constructor() {
-        this.m = new Float32Array(16);
+        this.mat = new Float32Array(16);
         this.identity();
     }
 
     identity(): this {
-        const m = this.m;
+        const m = this.mat;
         m.set([
             1, 0, 0, 0,
             0, 1, 0, 0,
@@ -102,19 +102,19 @@ export class mat4 {
     }
 
     copyFrom(mat: mat4): this {
-        this.m.set(mat.m);
+        this.mat.set(mat.mat);
         return this;
     }
 
     
-    /**
+    /*
      *  x,  0,  0, 0
      *  0,  y,  0, 0
      *  0,  0,  z, 0
      * tx, ty, tz, 1
      */
     multiply(other: mat4): this {
-        const a = this.m, b = other.m;
+        const a = this.mat, b = other.mat;
         const out = new Float32Array(16);
 
         for (let i = 0; i < 4; ++i) {
@@ -127,11 +127,11 @@ export class mat4 {
             }
         }
 
-        this.m.set(out);
+        this.mat.set(out);
         return this;
     }
 
-    /**
+    /*
      * Perspective matrice, the factor is calculated from the tan of the FOV divided by 2:
      * We have the near plane and far plane. (objects are drawn in-between)
      * aspect is the aspect-ratio like 16:9 on most screens.
@@ -144,28 +144,13 @@ export class mat4 {
     setPerspective(fovRad: number, aspect: number, near: number, far: number): this {
         const f = 1.0 / Math.tan(fovRad / 2);
         const nf = 1 / (near - far);
-        const m = this.m;
-
-        m[0] = f / aspect;
-        m[1] = 0;
-        m[2] = 0;
-        m[3] = 0;
-
-        m[4] = 0;
-        m[5] = f;
-        m[6] = 0;
-        m[7] = 0;
-
-        m[8] = 0;
-        m[9] = 0;
-        m[10] = (far + near) * nf;
-        m[11] = -1;
-
-        m[12] = 0;
-        m[13] = 0;
-        m[14] = 2 * far * near * nf;
-        m[15] = 0;
-
+        const m = this.mat;
+        m.set([
+            f / aspect,     0,      0,                       0,
+            0,              f,      0,                       0,
+            0,              0,      (far + near) * nf,      -1,
+            0,              0,      2*far*near*nf,           0
+        ]);
         return this;
     }
 
@@ -173,28 +158,13 @@ export class mat4 {
         const z = eye.subtract(center).normalize();
         const x = up.cross(z).normalize();
         const y = z.cross(x);
-        const m = this.m;
-
-        m[0] = x.x;
-        m[1] = y.x;
-        m[2] = z.x;
-        m[3] = 0;
-
-        m[4] = x.y;
-        m[5] = y.y;
-        m[6] = z.y;
-        m[7] = 0;
-
-        m[8] = x.z;
-        m[9] = y.z;
-        m[10] = z.z;
-        m[11] = 0;
-
-        m[12] = -x.dot(eye);
-        m[13] = -y.dot(eye);
-        m[14] = -z.dot(eye);
-        m[15] = 1;
-
+        const m = this.mat;
+        m.set([
+            x.x,            y.x,            z.x,            0,
+            x.y,            y.y,            z.y,            0,
+            x.z,            y.z,            z.z,            0,
+            -x.dot(eye),    -y.dot(eye),    -z.dot(eye),    1
+        ]);
         return this;
     }
 
@@ -206,29 +176,13 @@ export class mat4 {
         const xx = x * x2, xy = x * y2, xz = x * z2;
         const yy = y * y2, yz = y * z2, zz = z * z2;
         const wx = w * x2, wy = w * y2, wz = w * z2;
-
-        const m = this.m;
-
-        m[0] = (1 - (yy + zz)) * sx;
-        m[1] = (xy + wz) * sx;
-        m[2] = (xz - wy) * sx;
-        m[3] = 0;
-
-        m[4] = (xy - wz) * sy;
-        m[5] = (1 - (xx + zz)) * sy;
-        m[6] = (yz + wx) * sy;
-        m[7] = 0;
-
-        m[8] = (xz + wy) * sz;
-        m[9] = (yz - wx) * sz;
-        m[10] = (1 - (xx + yy)) * sz;
-        m[11] = 0;
-
-        m[12] = v.x;
-        m[13] = v.y;
-        m[14] = v.z;
-        m[15] = 1;
-
+        const m = this.mat;
+        m.set([
+            (1 - (yy + zz)) * sx,         (xy + wz) * sx,       (xz - wy) * sx,     0,
+                  (xy - wz) * sy,   (1 - (xx + zz)) * sy,       (yz + wx) * sy,     0,
+                  (xz + wy) * sz,         (yz - wx) * sz, (1 - (xx + yy)) * sz,     0,
+                             v.z,                    v.y,                  v.z,     1
+        ]);
         return this;
     }
 }

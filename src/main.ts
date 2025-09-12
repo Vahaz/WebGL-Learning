@@ -175,7 +175,7 @@ async function main(): Promise<void> {
         gl.viewport(0, 0, canvas.width, canvas.height);
 
         gl.useProgram(program);
-        gl.uniformMatrix4fv(matViewProjUniform, false, matViewProj.m);
+        gl.uniformMatrix4fv(matViewProjUniform, false, matViewProj.mat);
 
 
         cubes.forEach((cube, index) => {

@@ -99,6 +99,9 @@ Then, we can add texture one by one using async function `texSubImage3D` and spe
 > [!WARNING]
 > ⚠ Because we do not want to let the async function texSubImage3D wait, we need to preload our images to reduce loading time.
 
+> [!NOTE]  
+> You can still use a Texture Atlas and divide it into individual textures to make a Texture Array.
+
 ## 8️⃣ Instanced Drawing
 
 > [!NOTE]
