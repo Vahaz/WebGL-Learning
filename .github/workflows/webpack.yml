@@ -2,7 +2,7 @@ name: Build main.js
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "workflow" ]
   pull_request:
     branches: [ "main" ]
 
@@ -51,7 +51,7 @@ jobs:
       - name: Commit & push
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "automated build of main.js"
+          commit_message: "Workflow - Automated build of main.js"
           branch: workflow
           file_pattern: 'dist/main.js'
           create_branch: true
