@@ -8,18 +8,16 @@ import * as geo from "./geometry";
 
 const UP_VEC = new cls.vec3(0, 1, 0);
 const T0 = Date.now();
-const TEXTURES = [
-    './img/cat_omg.png',
-    './img/cat_stare.png'
-]
 const SETTINGS = {
     FOV : 60.0, // Default: 60.0
     ROTATION_ANGLE : 10.0, // Default: 10.0
 }
+const TEXTURES = [
+    './img/cat_omg.png',
+    './img/cat_stare.png'
+]
 
 async function main(): Promise<void> {
-
-    
 
     // Canvas Element and Rendering Context.
     const canvas = document.getElementById("webgl-canvas") as HTMLCanvasElement;
@@ -39,27 +37,8 @@ async function main(): Promise<void> {
     const fragmentSrc = await fnc.getShaderSource('./shaders/fragment_shader.frag');
     const program = fnc.createProgram(gl, vertexSrc, fragmentSrc);
 
-
-    // Create a texture and bind our image.
-    const texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D_ARRAY, texture);
-
-    // Target, Mipmap_Levels, Internal_Format, Width, Height, Images_Count
-    gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, 128, 128, TEXTURES.length);
-
-    // Flip the origin point of WebGL. (PNG format start at the top and WebGL at the bottom)
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-
-    // Because texSubImage3D is async, waiting for each image to load is slow. So, we preload all images using a Promise.
-    const images = await Promise.all(TEXTURES.map(src => fnc.getImage(src)));
-    for (let i = 0; i < images.length; i++) {
-        // Target, Mipmap_Level, Internal_Format, Width, Height, Depth, Border, Format, Type, Offset
-        gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, i, 128, 128, 1, gl.RGBA, gl.UNSIGNED_BYTE, images[i]);
-    }
-
-    // Change the minimum and magnitude filters when scaling up and down textures.
-    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    // Load all images, create a storage and store each image into a Texture Arrays.
+    fnc.loadTexture(gl, TEXTURES);
 
     // Static buffer for UV coordinates. Might be constant with texture arrays.
     const texCoordsBuffer = fnc.createStaticBuffer(gl, geo.UV_DATA, false);
@@ -68,13 +47,12 @@ async function main(): Promise<void> {
     const T1 = Date.now();
     fnc.setLogTime("test", `${Date.now() - T1}ms`);
 
-    /*
-    * Getting the attributes from the vertex shader file.
-    * Attributes locations can be forced in the vertex shader file with (location=number).
-    * If not forced, WebGL gives them a number, you can get this number with gl.getAttribLocation().
-    * Here, because we set manually the attribute location in the vertex shader,
-    * we can replace gl.getAttribLocation() with the (location=number) number.
-    */
+    /* Getting the attributes from the vertex shader file.
+     * Attributes locations can be forced in the vertex shader file with (location=number).
+     * If not forced, WebGL gives them a number, you can get this number with gl.getAttribLocation().
+     * Here, because we set manually the attribute location in the vertex shader,
+     * we can replace gl.getAttribLocation() with the (location=number) number.
+     */
     const positionAttribute = gl.getAttribLocation(program, 'vertexPosition'); // location = 0
     const uvAttribute = gl.getAttribLocation(program, 'aUV'); // location = 1
     const depthAttribute = gl.getAttribLocation(program, 'aDepth'); // location = 2
@@ -98,7 +76,7 @@ async function main(): Promise<void> {
     }
 
     // Control the depth of the texture array. Picking our displayed texture.
-    gl.vertexAttrib1f(depthAttribute, 0);
+    gl.vertexAttrib1f(depthAttribute, 1);
 
     // Create our vertex array object (VAOs) buffers.
     const cubeVAO = fnc.createVAOBuffer(gl, cubeVertices, cubeIndices, texCoordsBuffer, positionAttribute, uvAttribute);
@@ -120,8 +98,7 @@ async function main(): Promise<void> {
     let matViewProj = new cls.mat4();
 
     let cameraAngle = 0;
-    /**
-     * Add a function to call it each frame.
+    /* Add a function to call it each frame.
      * - Output Merger: Merge the shaded pixel fragment with the existing result image.
      * - Rasterizer: Wich pixel are part of the Vertices + Wich part is modified by WebGL.
      * - GPU Program: Pair Vertex & Fragment shaders.

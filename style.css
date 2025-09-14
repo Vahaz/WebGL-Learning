@@ -74,6 +74,11 @@ p {
     padding: .25em;
 }
 
+.github-icon {
+    width: 50px;
+    height: 50px;
+    padding-top: 11px;
+}
 
 #error {
     width: clamp(0px, 95%, 720px);
@@ -84,11 +89,17 @@ p {
 }
 
 @media (max-width: 420px) {
+
+    * {
+        font-size: small;
+    }
+
     #webgl-canvas {
         margin: 1em;
         image-rendering: crisp-edges;
         aspect-ratio: auto;
         height: auto;
+        max-height: 670px;
         flex: 1 1 auto;
         width: clamp(0px, 95%, 720px);
     }
@@ -99,6 +110,13 @@ p {
         height: fit-content;
         display: flex;
         gap: 1em;
+    }
+
+    .github-icon {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 10px;
+        margin-top: 5px;
     }
 
 }

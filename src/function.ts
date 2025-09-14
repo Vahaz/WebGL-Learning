@@ -62,8 +62,7 @@ export function toRadian(angle: number): number {
     return angle * Math.PI / 180;
 }
 
-/**
- * Create a WebGL Buffer type. (Opaque Handle)
+/* Create a WebGL Buffer type. (Opaque Handle)
  * - STATIC_DRAW : wont update often, but often used.
  * - ARRAY_BUFFER : indicate the place to store the Array.
  * - ELEMENT_ARRAY_BUFFER : Used for indices with cube shapes drawing.
@@ -83,8 +82,7 @@ export function createStaticBuffer(gl: WebGL2RenderingContext, data: ArrayBuffer
     return buffer
 }
 
-/**
- * Create vertex array object buffers, it read the vertices from GPU Buffer.
+/* Create vertex array object buffers, it read the vertices from GPU Buffer.
  * The vertex buffer contains the vertices coordinates (can also contains color and size).
  * The index buffer contains wich vertex need to be drawn on scene to avoid duplicates vertices.
  * In case of colors, an offset of 3 floats is used each time to avoid (x, y, z) coordinates.
@@ -155,4 +153,27 @@ export function createProgram(
         return 0;
     }
     return program;
+}
+
+
+/* Create a WebGL texture and bind it to a TEXTURE_2D_ARRAY.
+ * Set the parameters for the textures storage. (Target, Mipmap_Levels, Internal_Format, Width, Height, Images_Count)
+ * Flip the origin point of WebGL. (PNG format start at the top and WebGL at the bottom)
+ * Because texSubImage3D is async, waiting for each image to load is slow. So, we preload all images using a Promise.
+ * Set the parameters on how to store each textures. (Target, Mipmap_Level, Internal_Format, Width, Height, Depth, Border, Format, Type, Offset)
+ * Change the minimum and magnitude filters when scaling up and down textures.
+ */
+export async function loadTexture(gl: WebGL2RenderingContext, textures: string[]) {
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D_ARRAY, texture);
+    gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, 128, 128, textures.length);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
+    const images = await Promise.all(textures.map(src => getImage(src)));
+    for (let i = 0; i < images.length; i++) {
+        gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, i, 128, 128, 1, gl.RGBA, gl.UNSIGNED_BYTE, images[i]);
+    }
+
+    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 }

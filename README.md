@@ -1,6 +1,8 @@
 > [!IMPORTANT]  
 > This project follows multiple tutorials on Youtube and internet. It was used to learn WebGL / OpenGL in general. The DEVLOG.md is a summarize of the process I followed. Content in here might not be accurate.
 
+Link to the web page: [here](https://vahaz.github.io/WebGL-Learning/)
+
 ### Package:
  - NodeJS v23.11.0
  - https-localhost v4.7.1
