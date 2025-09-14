@@ -1,6 +1,6 @@
 * {
-    font-family: Arial, sans-serif;
-    font-size: large;
+    font-family: Montserrat, Arial, sans-serif;
+    font-size: medium;
     color: beige;
     padding: 0;
     margin: 0;
@@ -27,7 +27,10 @@ body {
     linear-gradient(90deg, rgba(255,255,255,.007) 1px, transparent 1px);
     background-size:100px 100px, 100px 100px, 20px 20px, 20px 20px;
     background-position:-2px -2px, -2px -2px, -1px -1px, -1px -1px;
+}
 
+p {
+    padding-bottom: 10px;
 }
 
 #webgl-canvas {
@@ -48,19 +51,29 @@ body {
 }
 
 .container {
-    width: clamp(5rem, 10vw, 10rem);
+    min-width: 5rem;
     border: 2px solid beige;
     overflow-wrap: break-word;
     box-sizing: border-box;
     text-align: center;
+    border-radius: 10px;
+    box-shadow: rgba(245, 245, 220, 0.2) 0px 0px 10px 2px inset;
+}
+
+.container:hover {
+    box-shadow: rgba(245, 220, 220, 0.5) 0px 0px 10px 2px inset;
+    .title {
+        text-decoration: underline;
+    }
 }
 
 .title {
-    background-color: rgb(12, 12, 12);
-    border-bottom: 2px solid beige;
     margin-bottom: 10px;
+    font-size: larger;
+    font-weight: bold;
     padding: .25em;
 }
+
 
 #error {
     width: clamp(0px, 95%, 720px);
