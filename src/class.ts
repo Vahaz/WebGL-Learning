@@ -9,7 +9,7 @@ export class Shape {
 
     constructor(
         private pos: vec3,
-        private scale: number,
+        public scale: number,
         private rotationAxis: vec3,
         private rotationAngle: number,
         public readonly vao: WebGLVertexArrayObject,

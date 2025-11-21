@@ -73,6 +73,17 @@ async function main(): Promise<void> {
         uvAttribute
     );
 
+    // Store our cubes, draw them each time. (a lot of draw calls)
+    const cubes: cls.Shape[] = [];
+    cubes.push(new cls.Shape(
+        new cls.vec3(0, 0, 0),
+        SETTINGS.object_size,
+        UP_VEC,
+        fnc.toRadian(0),
+        modelVAO,
+        model.indices.length
+    ));
+
     let matView = new cls.mat4();
     let matProj = new cls.mat4();
     let matViewProj = new cls.mat4();
@@ -92,17 +103,6 @@ async function main(): Promise<void> {
         const thisFrameTime = performance.now();
         const dt = (thisFrameTime - lastFrameTime) / 1000;
         lastFrameTime = thisFrameTime;
-
-        // Store our cubes, draw them each time. (a lot of draw calls)
-        const cubes: cls.Shape[] = [];
-        cubes.push(new cls.Shape(
-            new cls.vec3(0, 0, 0),
-            SETTINGS.object_size,
-            UP_VEC,
-            fnc.toRadian(0),
-            modelVAO,
-            model.indices.length
-        ));
 
         // Each frame adds 10° to the camera angle.
         // cameraAngle += dt * fnc.toRadian(10);
@@ -145,6 +145,7 @@ async function main(): Promise<void> {
 
         cubes.forEach((cube) => {
             cube.rotate(dt * fnc.toRadian(SETTINGS.object_rotation_speed));
+            cube.scale = SETTINGS.object_size;
             cube.draw(gl, matWorldUniform);
         });
 
