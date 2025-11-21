@@ -2,15 +2,15 @@
 
 ## 0️⃣ Before
 
-> [!TIP]  
+> [!TIP]
 > Read the [README](README.md) file; it contains all the links that made this possible!
 
-I strongly advise checking the linked tutorials / documentation to learn more about the subject.  
-We are working with **WebGL** (Web Graphics Library), which, as **MDN Web Docs** says *"WebGL [...] is a JavaScript API [...] to create 3D and 2D graphics within any compatible web browser without the use of plug-ins"*. We are also using **HTML** (Hypertext Markup Language), and **Typescript**, a strongly typed programming language that builds on JavaScript.  
+I strongly advise checking the linked tutorials / documentation to learn more about the subject.
+We are working with **WebGL** (Web Graphics Library), which, as **MDN Web Docs** says *"WebGL [...] is a JavaScript API [...] to create 3D and 2D graphics within any compatible web browser without the use of plug-ins"*. We are also using **HTML** (HyperText Markup Language), and **Typescript**, a strongly typed programming language that builds on JavaScript.
 
 ## 1️⃣ Basics
 
-> [!NOTE]  
+> [!NOTE]
 > The GPU is strong at parallel tasks / multi-tasking and uses **Shaders** to control the **Rendering Pipeline**. Different Graphics APIs (*OpenGL, WebGL, DirextX, Vulkan, etc*) allow us to communicate with the GPU.
 
 A simplified view of the **Rendering Pipeline**:
@@ -20,10 +20,10 @@ A simplified view of the **Rendering Pipeline**:
 - **Fragment shader**: Color the canvas.
 - **Final display**: Render the final canvas.
 
-`index.html` contains a `<canvas>` and `<div>` elements. The DIV is named **error-container** and linked to the `showError` function in [function.ts](/src/function.ts). It displays any errors directly on the page.  
+`index.html` contains a `<canvas>` and `<div>` elements. The DIV is named **error-container** and linked to the `showError` function in [function.ts](/src/function.ts). It displays any errors directly on the page.
 In [main.ts](/src/main.ts) you need to get the canvas element, and check if the WebGL2 context is supported by your browser.
 
-To render a triangle/point on screen, we need some steps:  
+To render a triangle/point on screen, we need some steps:
 - **Create, Bind and Attribute a Vertex Buffer** to store positions, colors and attributes.
 - **Create a [vertex_shader](/shaders/vertex_shader.vert)** to place our element and define its size, rotation, etc using buffer data.
 - **Create a [fragment_shader](/shaders/fragment_shader.frag)** to define the final color using the buffer data.
@@ -34,82 +34,93 @@ You can evolve this with more complex shaders (like light!) or further functions
 
 ## 2️⃣ Animation 🔁
 
-> [!NOTE]  
+> [!NOTE]
 > sources: [[02] WebGL Tutorial - Movement and Color](https://youtu.be/lLa6XkVLj0w)
 
-To add animation or movement, we need a `frame` function, called each frame using `requestAnimationFrame()` function. This lets us change the size or add movement to our rendered shapes.  
-We calculate the `delta time` (dt) using the **NodeJS** `performance.now()` to get the time spent between this frame and the last one in `ms`.   
+To add animation or movement, we need a `frame` function, called each frame using `requestAnimationFrame()` function. This lets us change the size or add movement to our rendered shapes.
+We calculate the `delta time` (dt) using the **NodeJS** `performance.now()` to get the time spent between this frame and the last one in `ms`.
 
 ## 3️⃣ Matrices
 
-> [!WARNING]  
+> [!WARNING]
 > Matrices, Vector and Quarternions are tricky and time-consuming to understand. Libraries are available like [glMatrix](https://glmatrix.net/) to ease the process.
 
-> [!NOTE]  
+> [!NOTE]
 > To understand Matrices, I suggest these videos from **pikuma**: ["Math for Game Developers: Why do we use 4x4 Matrices in 3D Graphics?"](https://youtu.be/Do_vEjd6gF0), ["Matrix Multiplication (A Simple Review)"](https://youtu.be/UG530eh8q4A), and [Perspective Projection Matrix (Math for Game Developers)](https://youtu.be/EqNcqBdrNyI)
 
 Matrices can feel abstract to understand. In [class.ts](/src/class.ts), we start with a Vector3 class to store 3 coordinates. The Quaternion is used as a replacement of 3x3 / 4x4 matrices to avoid **Gimbal Lock** with rotation. Matrices, on the other hand, transform the world and camera space, handle scaling, object translation, and more.
 
 ## 4️⃣ A world in 3D
 
-> [!NOTE]  
+> [!NOTE]
 > sources: [[03] WebGL Tutorial - Intro to 3D](https://youtu.be/_GSCxcmJ06A), [WebGL 2.0 by Andrew Adamson](https://youtube.com/playlist?list=PLPbmjY2NVO_X1U1JzLxLDdRn4NmtxyQQo)
 
 [geometry.ts](/src/geometry.ts) contains the vertices, indices location, and texture UVs. Overlapping tends to happen with complex shapes (*like squares*). So, **indices** are used to specify the drawing order to avoid having vertices on the same coordinates.
 
 ## 5️⃣ Textures
 
-> [!NOTE]  
+> [!NOTE]
 > source: [WebGL 2: Textures (Part 1)](https://youtu.be/0nZn5YPNf5k)
 
 In the [fragment_shader](/shaders/fragment_shader.frag) we do `fragColor = texture(sampler, textureCoord)`. The **sampler** is used to decide the displayed color for each texture's pixel (blending might happen), multiple samplers can be used and stored. **textureCoord** represents the coordinates of each pixel called [u,v] (also called [x,y]). textureCoord is an attribute; it needs to be in / out from the [vertex_shader](/shaders/vertex_shader.vert).
 
-The `texture()` function can be used multiples times to blend textures together.
+The `texture()` function can be used multiple times to blend textures together.
 
 A Mipmap is required by WebGL; it can be generated by WebGL using `gl.generateMipmap(gl.TEXTURE_2D)` or we can manually tell the sampler how to manage smaller canvas resolutions.
 
-> [!NOTE]  
+> [!NOTE]
 > JPG, PNG, GIF, etc have their origin at the top, while WebGL set it at the bottom.
 
-> [!NOTE]  
-> There is a lot of others way to do things, I advise to check on videos linked in readme file.
+> [!NOTE]
+> There are a lot of other ways to do things, I advise looking at linked videos in the readme file.
 
 ## 6️⃣ Mipmaps
 
 > [!NOTE]
 > source: [WebGL 2: Mipmaps (Textures Part 2)](https://youtu.be/ocGDNM0AL3c)
 
-Mipmaps are LODs (Level of details); they represent the shared pixel across the texture uv on a [0,0] (bottom left) to [1,1] (top right) coordinates. Each level of mipmap decrease by two the amount of pixels, getting a pixelated result at high mipmap level.
+Mipmaps are LODs (Level of details); they represent the shared pixel across the texture uv on a [0,0] (bottom left) to [1,1] (top right) coordinates. Each level of mipmap decreases by two the amount of pixels, getting a pixelated result at high mipmap level.
 
-NEAREST modifier considier only the closest mipmap that look like the original, while LINEAR will take both before/after mipmap. So with a NEAREST for a mipmap of 4.43 the result will be 4, while with LINEAR the result will be 4 and 5.
+NEAREST modifier considers only the closest mipmap that looks like the original, while LINEAR will take both before/after mipmap. So with a NEAREST for a mipmap of 4.43 the result will be 4, while with LINEAR the result will be 4 and 5.
 
-## 7️⃣ Texture Arrays or Texture Atlas 
+## 7️⃣ Texture Arrays or Texture Atlas
 
 > [!NOTE]
 > sources: [WebGL 2: Texture Atlases or Sprite Sheets (Textures Part 3)](https://youtu.be/w3im_9qbM18) and [WebGL 2: Texture Arrays (Textures Part 4)](https://youtu.be/FCkMPkgWClo)
 
-First, we used Texture Atlas, a way to store our textures into a single image file. This ask us to manage the [u,v] position for each texture to know their location on the Texture Atlas. The problem with Texture Atlas is that High Mipmaps can 'bleed' their pixels while downscaling onto others textures.
+First, we used Texture Atlas, a way to store our textures in a single image file. This needs us to manage the [u,v] position for each texture to know its location on the Texture Atlas. The problem with Texture Atlas is that High Mipmaps can 'bleed' their pixels while downscaling onto other textures.
 
 For Texture Atlas we use gl.texImage**2D**(Target, Mipmap_Level, Internal_Format, Width, Height, Border, Format, Type, Source) because we only use one 2D image.
 
-A solution to avoid texture bleeding with Texture Atlas are Texture Arrays. They use a function called `texStorage3D` to create a "pile of texture" in 3D. It arguments are a Target (TEXTURE_2D_ARRAY), a Mipmap_Levels (1), Internal_Format (RGBA), Width (128), Height (128) and Images_Count.
+A solution to avoid texture bleeding with Texture Atlas is Texture Arrays. They use a function called `texStorage3D` to create a "pile of texture" in 3D. Its arguments are a Target (TEXTURE_2D_ARRAY), a Mipmap_Levels (1), Internal_Format (RGBA), Width (128), Height (128) and Images_Count.
 
-Then, we can add texture one by one using async function `texSubImage3D` and specify it depth. Depth is a new argument for the [u,v] coordinates, it allow us to pick a specify image at the specify depth from our "pile of images". 
+Then, we can add textures one by one using an async function `texSubImage3D` and specify it depth. Depth is a new argument for the [u,v] coordinates, it allows us to pick an image at the specified depth from our "pile of images".
 
 > [!WARNING]
 > ⚠ Because we do not want to let the async function texSubImage3D wait, we need to preload our images to reduce loading time.
 
-> [!NOTE]  
+> [!NOTE]
 > You can still use a Texture Atlas and divide it into individual textures to make a Texture Array.
 
-## 8️⃣ Instanced Drawing
+## 8️⃣ Loading a .obj model
 
-> [!NOTE]
-> source: [WebGL 2: Instanced Drawing](https://youtu.be/Ude1zZbf20s)
+> [!WARNING]
+> ⚠ I did not make this part, this was a bit tedious to do.
+
+We have to retrieve all data from .obj (from Blender).
+I like this type of file because we can see the content of the file to better understand how it works.
+First, we have to fetch the file, retrieve all vertices, uv positions, and indices from the file.
+Lastly, we can store them in arrays and return them.
+
+- In blender, create an object (what you like).
+- After, do not forget to select all faces and "Triangulate faces" to transform your model in mutliples triangles.
+- Our code works with triangles, not quads.
+- Also, do not forget to select all and do "UV Unwrap Faces" > "Cube Projection" to generate our UVs.
+- After, you can add a texture in [image folder](/img/) and change settings in [main.ts](/src/main.ts) or [main.js](/dist/main.js).
 
 ## 🤖 Workflow
 
-Thanks to GitHub, I added **Workflow**. This automatically build the [main.js](/dist/main.js) file without needing me to run `webpack --watch` on my own when I commit my changes. Still, I need to run `webpack --watch` when I update my code, to see it changes in real time, but I wanted to use and understand GitHub Workflows. 👍
+Thanks to GitHub, I added **Workflow**. This automatically builds the [main.js](/dist/main.js) file without needing me to run `webpack --watch` on my own when I commit my changes. Still, I need to run `webpack --watch` when I update my code to see its changes in real time, but I wanted to use and understand GitHub Workflows. 👍
 
 ## 12. Lightning 💡
 

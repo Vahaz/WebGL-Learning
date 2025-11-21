@@ -2,43 +2,25 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>[Vahaz] Learning WebGL</title>
-        <script src="dist/main.js" type="module"></script>
-        <link rel="stylesheet" type="text/css" href="style.css">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>[Vahaz] Learning WebGL</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
         <!-- Data & Prewiew settings -->
-        <meta name="description" content="A website showcasing my WebGL canvas and what I learned.">
+        <meta name="description" content="A website showcasing what I learned with WebGL.">
         <meta property="og:title" content="[Vahaz] Learning WebGL"/>
-        <meta property="og:description" content="A website showcasing my WebGL canvas and what I learned." />
+        <meta property="og:description" content="A website showcasing what I learned with WebGL." />
         <meta property="og:image" content="https://vahaz.github.io/WebGL-Learning/img/cat_omg.png"/>
         <meta property="og:type" content="website"/>
         <meta property="og:url" content="https://vahaz.github.io/WebGL-Learning/"/>
     </head>
     <body>
         <canvas id="webgl-canvas"></canvas>
-        <section class="logs">
-            <div class="container" id="loading">
-                <p class="title">Loading</p>
-                <p>...</p>
-            </div>
-            <div class="container" id="fps">
-                <p class="title">FPS</p>
-                <p>...</p>
-            </div>
-            <div class="container" id="test">
-                <p class="title">Test</p>
-                <p>...</p>
-            </div>
-            <div class="container" id="github">
-                <a href="https://github.com/Vahaz/WebGL-Learning" target="_blank">
-                    <img src="github-mark-white.svg" alt="GitHub" class="github-icon">
-                </a>
-            </div>
-        </section>
         <div class="container" id="error">
-            <p class="title">Errors - Logs</p>
+            <p class="title">Logs</p>
         </div>
+        <script src="dist/main.bundle.js" type="module"></script>
+        <script src="dist/lib.bundle.js" type="module"></script>
     </body>
 </html>

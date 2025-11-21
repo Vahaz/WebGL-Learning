@@ -31,7 +31,7 @@ export class Shape {
         gl.drawElements(gl.TRIANGLES, this.numIndices, gl.UNSIGNED_SHORT, 0);
         gl.bindVertexArray(null);
     }
-    
+
 }
 
 export class vec3 {
@@ -106,7 +106,7 @@ export class mat4 {
         return this;
     }
 
-    
+
     /*
      *  x,  0,  0, 0
      *  0,  y,  0, 0
@@ -133,8 +133,8 @@ export class mat4 {
 
     /*
      * Perspective matrice, the factor is calculated from the tan of the FOV divided by 2:
-     * We have the near plane and far plane. (objects are drawn in-between)
-     * aspect is the aspect-ratio like 16:9 on most screens.
+     * We have the near plane and far plane. (objects are drawn in between)
+     * Aspect is the aspect ratio, like 16:9 on most screens.
      * We change each vertices x, y and z by the following:
      * 0, 0,  0,  0
      * 0, 5,  0,  0
@@ -179,9 +179,9 @@ export class mat4 {
         const m = this.mat;
         m.set([
             (1 - (yy + zz)) * sx,         (xy + wz) * sx,       (xz - wy) * sx,     0,
-                  (xy - wz) * sy,   (1 - (xx + zz)) * sy,       (yz + wx) * sy,     0,
-                  (xz + wy) * sz,         (yz - wx) * sz, (1 - (xx + yy)) * sz,     0,
-                             v.z,                    v.y,                  v.z,     1
+            (xy - wz) * sy,   (1 - (xx + zz)) * sy,       (yz + wx) * sy,     0,
+            (xz + wy) * sz,         (yz - wx) * sz, (1 - (xx + yy)) * sz,     0,
+            v.x,                    v.y,                  v.z,     1
         ]);
         return this;
     }

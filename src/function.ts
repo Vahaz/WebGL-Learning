@@ -12,29 +12,6 @@ export function showError(msg: string = "No Data"): void {
     console.log(msg);
 }
 
-export function setLogTime(target: string, msg: string): void {
-    let container = null;
-    if (target == "loading") {
-        container = document.getElementById("loading");
-    } else if (target == "fps") {
-        container = document.getElementById("fps");
-    } else {
-        container = document.getElementById("test");
-    }
-
-    if(container === null) return console.log(`No Element with ID: ${target}`)
-    const p = container.querySelector('p:not(.title)') as HTMLElement | null;
-    if (p) {
-        p.innerText = msg;
-    } else {
-        const element = document.createElement('p');
-        element.innerText = msg;
-        container.appendChild(element);
-    }
-    
-    console.log(`${target}: ${msg}`);
-}
-
 // Get shaders source code.
 export async function getShaderSource(url: string): Promise<string> {
     const response = await fetch(url);
@@ -63,17 +40,21 @@ export function toRadian(angle: number): number {
 }
 
 /* Create a WebGL Buffer type. (Opaque Handle)
- * - STATIC_DRAW : wont update often, but often used.
+ * - STATIC_DRAW : won't update often, but often used.
  * - ARRAY_BUFFER : indicate the place to store the Array.
- * - ELEMENT_ARRAY_BUFFER : Used for indices with cube shapes drawing.
+ * - ELEMENT_ARRAY_BUFFER : Used for indices with cube shape drawing.
  * Bind the Buffer to the CPU, add the Array to the Buffer and Clear after use.
  */
-export function createStaticBuffer(gl: WebGL2RenderingContext, data: ArrayBuffer, isIndice: boolean): WebGLBuffer {
+export function createStaticBuffer(
+    gl: WebGL2RenderingContext,
+    data: ArrayBuffer | Uint16Array<ArrayBufferLike> | Float32Array<ArrayBufferLike>,
+    isIndice: boolean
+): WebGLBuffer {
     const buffer = gl.createBuffer();
     const type = (isIndice == true) ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER
-    if(!buffer) { 
-        showError("Failed to allocate buffer space"); 
-        return 0; 
+    if(!buffer) {
+        showError("Failed to allocate buffer space");
+        return 0;
     }
 
     gl.bindBuffer(type, buffer);
@@ -82,11 +63,11 @@ export function createStaticBuffer(gl: WebGL2RenderingContext, data: ArrayBuffer
     return buffer
 }
 
-/* Create vertex array object buffers, it read the vertices from GPU Buffer.
- * The vertex buffer contains the vertices coordinates (can also contains color and size).
- * The index buffer contains wich vertex need to be drawn on scene to avoid duplicates vertices.
+/* Create vertex array object buffers, it reads the vertices from GPU Buffer.
+ * The vertex buffer contains the vertices' coordinates (can also contain color and size).
+ * The index buffer contains which vertex needs to be drawn on scene to avoid duplicate vertices.
  * In case of colors, an offset of 3 floats is used each time to avoid (x, y, z) coordinates.
- * The vertex shader place the vertices in clip space and the fragment shader color the pixels. (Default: 0)
+ * The vertex shader places the vertices in clip space and the fragment shader colors the pixels. (Default: 0)
  * VertexAttribPointer [Index, Size, Type, IsNormalized, Stride, Offset]
  * - Index (location)
  * - Size (Component per vector)
@@ -158,9 +139,9 @@ export function createProgram(
 
 /* Create a WebGL texture and bind it to a TEXTURE_2D_ARRAY.
  * Set the parameters for the textures storage. (Target, Mipmap_Levels, Internal_Format, Width, Height, Images_Count)
- * Flip the origin point of WebGL. (PNG format start at the top and WebGL at the bottom)
+ * Flip the origin point of WebGL. (PNG format starts at the top and WebGL at the bottom)
  * Because texSubImage3D is async, waiting for each image to load is slow. So, we preload all images using a Promise.
- * Set the parameters on how to store each textures. (Target, Mipmap_Level, Internal_Format, Width, Height, Depth, Border, Format, Type, Offset)
+ * Set the parameters on how to store each texture. (Target, Mipmap_Level, Internal_Format, Width, Height, Depth, Border, Format, Type, Offset)
  * Change the minimum and magnitude filters when scaling up and down textures.
  */
 export async function loadTexture(gl: WebGL2RenderingContext, textures: string[]) {
